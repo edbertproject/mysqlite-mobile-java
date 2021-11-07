@@ -2,16 +2,13 @@ package com.coba.sqlite;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.util.Patterns;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 
 public class RegisterActivity extends AppCompatActivity {
@@ -25,13 +22,13 @@ public class RegisterActivity extends AppCompatActivity {
 
     Button registerButton;
 
-    SqliteHelper sqliteHelper;
+    LoginHelper sqliteHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register2);
-        sqliteHelper = new SqliteHelper(this);
+        sqliteHelper = new LoginHelper(this);
         this.init();
 
         registerButton.setOnClickListener(view -> {
@@ -42,14 +39,15 @@ public class RegisterActivity extends AppCompatActivity {
                 String password = passwordInput.getText().toString();
 
                 if (!sqliteHelper.isEmailExists(email)) {
-                    sqliteHelper.addUser(new UserModel(null, username, email, password));
-                    Snackbar.make(registerButton, "User created successfully! please login!", Snackbar.LENGTH_LONG).show();
-                    new Handler(Looper.getMainLooper()).postDelayed(this::finish, Snackbar.LENGTH_LONG);
+                    UserModel user = new UserModel(null, username, email, password);
+                    sqliteHelper.addUser(user);
+                    Toast.makeText(getApplicationContext(), "User created successfully! please login!", Toast.LENGTH_LONG).show();
+                    finish();
                 } else {
-                    Snackbar.make(registerButton, "User already exists with same email!", Snackbar.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "User already exists with same email!", Toast.LENGTH_LONG).show();
                 }
             } else {
-                Snackbar.make(registerButton, "Failed to register!", Snackbar.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Failed to register!", Toast.LENGTH_LONG).show();
             }
 
         });
@@ -77,10 +75,10 @@ public class RegisterActivity extends AppCompatActivity {
 
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             isValid = false;
-            usernameLayout.setError("Please enter valid email!");
+            emailLayout.setError("Please enter valid email!");
         } else {
             isValid = true;
-            usernameLayout.setError(null);
+            emailLayout.setError(null);
         }
 
         return isValid;
@@ -97,7 +95,7 @@ public class RegisterActivity extends AppCompatActivity {
         if (username.isEmpty()) {
             isValid = false;
             usernameLayout.setError("Please enter valid username!");
-        } else if (username.length() >= 5) {
+        } else if (username.length() >= 4) {
             isValid = true;
             usernameLayout.setError(null);
         } else {
@@ -118,12 +116,12 @@ public class RegisterActivity extends AppCompatActivity {
         if (password.isEmpty()) {
             isValid = false;
             passwordLayout.setError("Please enter valid username!");
-        } else if (password.length() >= 5) {
+        } else if (password.length() >= 4) {
             isValid = true;
             passwordLayout.setError(null);
         } else {
             isValid = false;
-            passwordLayout.setError("Username is too shor!");
+            passwordLayout.setError("Username is too short!");
         }
 
         return isValid;

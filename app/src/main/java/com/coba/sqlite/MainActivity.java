@@ -6,9 +6,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.Toast;
 
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 
 public class MainActivity extends AppCompatActivity {
@@ -20,13 +19,13 @@ public class MainActivity extends AppCompatActivity {
 
     Button loginButton;
 
-    SqliteHelper sqliteHelper;
+    LoginHelper sqliteHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        sqliteHelper = new SqliteHelper(this);
+        sqliteHelper = new LoginHelper(this);
         init();
 
         loginButton.setOnClickListener(view -> {
@@ -38,14 +37,14 @@ public class MainActivity extends AppCompatActivity {
                 UserModel currentUser = sqliteHelper.Authenticate(new UserModel(null, username, null, password));
 
                 if (currentUser != null) {
-                    Snackbar.make(loginButton, "Successfully logged in!", Snackbar.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Successfully logged in!", Toast.LENGTH_LONG).show();
 
-                    Intent intent = new Intent(MainActivity.this, HomeActivity.class);
-                    intent.putExtra("us",username);
+                    Intent intent = new Intent(MainActivity.this, ListActivity.class);
+                    intent.putExtra("username",username);
                     startActivity(intent);
                     finish();
                 } else {
-                    Snackbar.make(loginButton, "Username or password is incorrect, please try again!", Snackbar.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Username or password is incorrect, please try again!", Toast.LENGTH_LONG).show();
                 }
             }
 
@@ -74,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
         if (username.isEmpty()) {
             isValid = false;
             usernameLayout.setError("Please enter valid username!");
-        } else if (username.length() >= 5) {
+        } else if (username.length() >= 4) {
             isValid = true;
             usernameLayout.setError(null);
         } else {
@@ -93,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
         if (password.isEmpty()) {
             isValid = false;
             passwordLayout.setError("Please enter valid username!");
-        } else if (password.length() >= 5) {
+        } else if (password.length() >= 4) {
             isValid = true;
             passwordLayout.setError(null);
         } else {
